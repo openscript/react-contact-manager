@@ -1,7 +1,7 @@
 import React from 'react';
 import {Contact} from "../../models/contact";
 import {ContactForm} from './ContactForm'
-import {Table, Button, Checkbox} from "antd";
+import {Button, Checkbox} from "antd";
 
 interface Props {
     contacts: Contact[]; // gleich wie users: Array<User>;
@@ -28,7 +28,7 @@ export const ContactIndex: React.FC<Props> = (props) => {
         </thead>
         <tbody>
             {props.contacts.map(contact => (
-                <tr>
+                <tr key={contact.id}>
                     <td><ContactForm saveContact={props.updateAction} contact={contact}/></td>
                     <td><Button onClick={() => props.deleteAction(contact.id)}>Delete</Button></td>
                     <td>{contact.first_name}</td>

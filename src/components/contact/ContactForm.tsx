@@ -2,18 +2,10 @@ import React, {useState} from 'react';
 import {QuestionType} from "../../models/questionType";
 import {Contact} from "../../models/contact";
 import {Dialog} from "../Dialog";
-import styled from '@emotion/styled';
 import {Select, Button, Form, Input, Checkbox, Tabs} from "antd";
 
 const { TextArea } = Input;
-
 const { TabPane } = Tabs;
-
-const CustomForm = styled.form`
-    input {
-      display: block;
-    }
-`;
 
 interface Props {
     saveContact: (contact: Contact) => void;
@@ -112,8 +104,8 @@ export const ContactForm: React.FC<Props> = (props) => {
 
                             <label htmlFor="question_type">Question Type</label>
                             <Select onChange={handleCheckbox} id="question_type" defaultValue={currentContact.question_type}>
-                                <option value={QuestionType.SUPPORT}>support</option>
-                                <option value={QuestionType.TECHNICAL_QUESTION}>technical question</option>
+                                <Select.Option value={QuestionType.SUPPORT}>support</Select.Option>
+                                <Select.Option value={QuestionType.TECHNICAL_QUESTION}>technical question</Select.Option>
                             </Select><br />
 
                             <label htmlFor="email">Email</label>
