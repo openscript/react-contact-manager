@@ -35,7 +35,7 @@ export const ContactIndex: React.FC<Props> = (props) => {
                     <td>{contact.last_name}</td>
                     <td>{contact.insert_date}</td>
                     <td>{contact.comment}</td>
-                    <td><Checkbox defaultChecked={contact.want_to_be_contacted} disabled /></td>
+                    <td><Checkbox checked={contact.want_to_be_contacted} disabled /></td>
                     <td>{contact.question_type}</td>
                     <td>{contact.email}</td>
                 </tr>

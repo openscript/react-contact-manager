@@ -1,125 +1,173 @@
-import React, {useState} from 'react';
-import {QuestionType} from "../../models/questionType";
-import {Contact} from "../../models/contact";
-import {Dialog} from "../Dialog";
-import {Select, Button, Form, Input, Checkbox, Tabs} from "antd";
+import React, { useState } from "react";
+import { QuestionType } from "../../models/questionType";
+import { Contact } from "../../models/contact";
+import { Dialog } from "../Dialog";
+import { Select, Button, Form, Input, Checkbox, Tabs } from "antd";
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 
 interface Props {
-    saveContact: (contact: Contact) => void;
-    contact?: Contact;
+  saveContact: (contact: Contact) => void;
+  contact?: Contact;
 }
 
-export const ContactForm: React.FC<Props> = (props) => {
-    const initialContact = props.contact
-        ? props.contact
-        : {
-            id: new Date().getTime(),
-            first_name: '',
-            last_name: '',
-            insert_date: 0,
-            comment: '',
-            want_to_be_contacted: false,
-            question_type: QuestionType.SUPPORT,
-            email: ''
-        };
+export const ContactForm: React.FC<Props> = props => {
+  const initialContact = props.contact
+    ? props.contact
+    : {
+        id: new Date().getTime(),
+        first_name: "",
+        last_name: "",
+        insert_date: 0,
+        comment: "",
+        want_to_be_contacted: false,
+        question_type: QuestionType.SUPPORT,
+        email: ""
+      };
 
-    const [open, isOpen] = useState<boolean>(false);
+  const [open, isOpen] = useState<boolean>(false);
 
-    const [currentContact, setCurrentContact] = useState<Contact>(initialContact);
+  const [currentContact, setCurrentContact] = useState<Contact>(initialContact);
 
-    const handleSubmit = (event: React.MouseEvent<HTMLInputElement>) => {
-        toggleDialog();
-        props.saveContact(currentContact);
+  const handleSubmit = (event: React.MouseEvent<HTMLInputElement>) => {
+    toggleDialog();
+    props.saveContact(currentContact);
+  };
+
+  const handleSelect = (event: any) => {
+  }
+
+  const handleCheckbox = (event: CheckboxChangeEvent) => {
+    updateContactState(event, event.target.checked);
+  };
+
+  const updateContactState = (event: any, value: string | boolean | number) => {
+    const newCurrentContact = { ...currentContact, [event.target.name]: value };
+    setCurrentContact(newCurrentContact);
+  };
+
+  const handleChange = (
+    event: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    console.log(event);
+    let value: string | number | boolean = event.target.value;
+    if (event.target.type === "date") {
+      value = new Date(value).getTime();
     }
+    updateContactState(event, value);
+  };
 
-    const handleCheckbox = (event: any) => {
+  const toggleDialog = () => {
+    isOpen(!open);
+  };
 
-        let checkboxValueToSave: boolean = false;
+  return (
+    <>
+      <Button onClick={toggleDialog}>{props.contact ? "Edit" : "New"}</Button>
+      <div>
+        <Dialog open={open}>
+          <Form>
+            <h1>ContactForm</h1>
 
-        if (event.target.checked) {
-            checkboxValueToSave = true;
-        } else {
-            checkboxValueToSave = false;
-        }
-        updateContactState(event, checkboxValueToSave);
-    }
+            <Tabs defaultActiveKey="1">
+              <TabPane tab="Names" key="1">
+                <label htmlFor="first_name">Firstname</label>
+                <Input
+                  onChange={handleChange}
+                  type="text"
+                  name="first_name"
+                  id="first_name"
+                  required
+                  defaultValue={currentContact.first_name}
+                />
+                <br />
 
-    const updateContactState = (event: any, value: string | boolean | number) => {
-        const newCurrentContact = {...currentContact, [event.target.name]: value};
-        setCurrentContact(newCurrentContact);
-    }
+                <label htmlFor="last_name">Lastname</label>
+                <Input
+                  onChange={handleChange}
+                  type="text"
+                  name="last_name"
+                  id="last_name"
+                  required
+                  defaultValue={currentContact.last_name}
+                />
+                <br />
+              </TabPane>
 
-    const handleChange = ( event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        console.log(event);
-        let value: string|number|boolean = event.target.value;
-        if (event.target.type === 'date') {
-            value = new Date(value).getTime();
-        }
-        updateContactState(event, value);
-    }
+              <TabPane tab="Date" key="2">
+                <label htmlFor="insert_date">Insert Date</label>
+                <Input
+                  onChange={handleChange}
+                  type="date"
+                  name="insert_date"
+                  id="insert_date"
+                  required
+                />
+                <br />
+              </TabPane>
 
-    const toggleDialog = () => {
-        isOpen(!open);
-    }
+              <TabPane tab="Properties" key="3">
+                <label htmlFor="comment">Comment</label>
+                <TextArea
+                  onChange={handleChange}
+                  name="comment"
+                  id="comment"
+                  required
+                  defaultValue={currentContact.comment}
+                  autoSize={{ minRows: 2, maxRows: 6 }}
+                />
+                <br />
+                <label htmlFor="want_to_be_contacted">
+                  Want to be contacted
+                </label>
+                <Checkbox
+                  onChange={handleCheckbox}
+                  name="want_to_be_contacted"
+                  id="want_to_be_contacted"
+                  defaultChecked={currentContact.want_to_be_contacted}
+                >
+                  Want to be contacted
+                </Checkbox>{" "}
+                <br />
+                <label htmlFor="question_type">Question Type</label>
+                <Select
+                  onChange={handleSelect}
+                  id="question_type"
+                  defaultValue={currentContact.question_type}
+                >
+                  <Select.Option value={QuestionType.SUPPORT}>
+                    support
+                  </Select.Option>
+                  <Select.Option value={QuestionType.TECHNICAL_QUESTION}>
+                    technical question
+                  </Select.Option>
+                </Select>
+                <br />
+                <label htmlFor="email">Email</label>
+                <Input
+                  onChange={handleChange}
+                  type="email"
+                  name="email"
+                  id="email"
+                  defaultValue={currentContact.email}
+                />
+                <br />
+              </TabPane>
+            </Tabs>
 
-    return (
-        <>
-            <Button onClick={toggleDialog}>
-                {props.contact ? 'Edit' : 'New'}
+            <Button type="primary" onClick={handleSubmit}>
+              Save
             </Button>
-            <div>
-                <Dialog open={open}>
-                <Form>
-                    <h1>ContactForm</h1>
-
-                    <Tabs defaultActiveKey="1">
-                        
-                        <TabPane tab="Names" key="1">
-
-                            <label htmlFor="first_name">Firstname</label>
-                            <Input onChange={handleChange} type="text" name="first_name" id="first_name" required defaultValue={currentContact.first_name} /><br />
-
-                            <label htmlFor="last_name">Lastname</label>
-                            <Input onChange={handleChange} type="text" name="last_name" id="last_name" required defaultValue={currentContact.last_name} /><br />
-
-                        </TabPane>
-
-                        <TabPane tab="Date" key="2">
-
-                            <label htmlFor="insert_date">Insert Date</label>
-                            <Input onChange={handleChange} type="date" name="insert_date" id="insert_date" required /><br />
-
-                        </TabPane>
-
-                        <TabPane tab="Properties" key="3">
-
-                            <label htmlFor="comment">Comment</label>
-                            <TextArea onChange={handleChange} name="comment" id="comment" required defaultValue={currentContact.comment} autoSize={{ minRows: 2, maxRows: 6 }}/><br />
-
-                            <label htmlFor="want_to_be_contacted">Want to be contacted</label>
-                            <Checkbox onChange={handleCheckbox} name="want_to_be_contacted" id="want_to_be_contacted" defaultChecked={currentContact.want_to_be_contacted}>Want to be contacted</Checkbox> <br />
-
-                            <label htmlFor="question_type">Question Type</label>
-                            <Select onChange={handleCheckbox} id="question_type" defaultValue={currentContact.question_type}>
-                                <Select.Option value={QuestionType.SUPPORT}>support</Select.Option>
-                                <Select.Option value={QuestionType.TECHNICAL_QUESTION}>technical question</Select.Option>
-                            </Select><br />
-
-                            <label htmlFor="email">Email</label>
-                            <Input onChange={handleChange} type="email" name="email" id="email" defaultValue={currentContact.email} /><br />
-
-                        </TabPane>
-
-                    </Tabs>
-
-                    <Button type="primary" onClick={handleSubmit}>Save</Button>
-                    <Button type="primary" onClick={toggleDialog}>Cancel</Button>
-                </Form>
-            </Dialog>
-            </div>
-        </>
-    );
-}
+            <Button type="primary" onClick={toggleDialog}>
+              Cancel
+            </Button>
+          </Form>
+        </Dialog>
+      </div>
+    </>
+  );
+};
